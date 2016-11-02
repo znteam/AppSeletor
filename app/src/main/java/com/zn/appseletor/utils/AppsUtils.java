@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
 import com.zn.appseletor.bean.AppBean;
+import com.zn.appseletor.common.CharacterParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +25,10 @@ public class AppsUtils {
         List<ResolveInfo> apps = packageManager.queryIntentActivities(mainIntent, 0);
         for (ResolveInfo app : apps) {
             AppBean tmpApp = new AppBean();
-            tmpApp.setName(app.loadLabel(packageManager).toString());
+            String appName = app.loadLabel(packageManager).toString().trim();
+            tmpApp.setName(appName);
             tmpApp.setPkgName(app.activityInfo.packageName);
+            tmpApp.setSortLetters(CharacterParser.getInstance().getSelling(appName).toUpperCase());
             appList.add(tmpApp);
         }
         return appList;

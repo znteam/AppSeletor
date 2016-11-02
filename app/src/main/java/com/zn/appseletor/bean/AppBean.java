@@ -8,6 +8,7 @@ public class AppBean {
 
     private String name;
     private String pkgName;
+    private String sortLetters;
 
     public String getName() {
         return name;
@@ -23,5 +24,13 @@ public class AppBean {
 
     public void setPkgName(String pkgName) {
         this.pkgName = pkgName;
+    }
+
+    public String getSortLetters() {
+        return sortLetters;
+    }
+
+    public void setSortLetters(String sortLetters) {
+        this.sortLetters = sortLetters;
     }
 }

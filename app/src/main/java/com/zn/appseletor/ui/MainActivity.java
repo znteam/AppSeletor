@@ -8,11 +8,14 @@ import android.widget.Toast;
 
 import com.zn.appseletor.R;
 import com.zn.appseletor.bean.AppBean;
+import com.zn.appseletor.common.CharacterParser;
+import com.zn.appseletor.common.PinyinComparator;
 import com.zn.appseletor.model.AppModel;
 import com.zn.appseletor.presenter.AppPresenter;
 import com.zn.appseletor.utils.AppsUtils;
 import com.zn.appseletor.view.IAppListView;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -24,11 +27,14 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity implements IAppListView {
 
     private static final String TAG = "zning";
+    private PinyinComparator pinyinComparator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        pinyinComparator= new PinyinComparator();
 
         findViewById(R.id.main_tv_hello).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,8 +74,9 @@ public class MainActivity extends AppCompatActivity implements IAppListView {
 
     @Override
     public void showAppList(List<AppBean> appList) {
+        Collections.sort(appList, pinyinComparator);
         for (AppBean bean : appList) {
-            Log.d("zning", "onNext(" + bean.getName() + ")");
+            Log.d("zning", "onNext(" + bean.getSortLetters()+">>"+bean.getName() + ")");
         }
     }
 
