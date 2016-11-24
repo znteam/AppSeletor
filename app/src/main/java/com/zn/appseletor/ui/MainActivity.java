@@ -1,83 +1,44 @@
 package com.zn.appseletor.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.zn.appseletor.R;
+import com.zn.appseletor.adapter.AppAdapter;
 import com.zn.appseletor.bean.AppBean;
-import com.zn.appseletor.common.CharacterParser;
-import com.zn.appseletor.common.PinyinComparator;
 import com.zn.appseletor.model.AppModel;
 import com.zn.appseletor.presenter.AppPresenter;
-import com.zn.appseletor.utils.AppsUtils;
 import com.zn.appseletor.view.IAppListView;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.Map;
 
-import rx.Single;
-import rx.SingleSubscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
-public class MainActivity extends AppCompatActivity implements IAppListView {
+public class MainActivity extends Activity implements IAppListView {
 
     private static final String TAG = "zning";
-    private PinyinComparator pinyinComparator;
+    private RecyclerView contentRv;
+    private AppAdapter appAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pinyinComparator= new PinyinComparator();
-
-        findViewById(R.id.main_tv_hello).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                 getApp();
-            }
-        });
+        appAdapter = new AppAdapter();
+        contentRv = (RecyclerView) findViewById(R.id.main_rv_content);
+        contentRv.setLayoutManager(new LinearLayoutManager(this));
+        contentRv.setAdapter(appAdapter);
 
         AppPresenter ap = new AppPresenter(this, AppModel.getInstance());
         ap.getAppList(this);
 
     }
 
-    void getApp(){
-        Single<List<AppBean>> single = Single.fromCallable(new Callable<List<AppBean>>() {
-            @Override
-            public List<AppBean> call() throws Exception {
-                return AppsUtils.getAllAppsList(MainActivity.this);
-            }
-        });
-        single.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new SingleSubscriber<List<AppBean>>() {
-
-            @Override
-            public void onSuccess(List<AppBean> value) {
-                for (AppBean bean : value) {
-                    Toast.makeText(MainActivity.this, bean.getName(), Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "onNext(" + bean.getName() + ")");
-                }
-            }
-
-            @Override
-            public void onError(Throwable error) {
-
-            }
-        });
-    }
-
     @Override
-    public void showAppList(List<AppBean> appList) {
-        Collections.sort(appList, pinyinComparator);
-        for (AppBean bean : appList) {
-            Log.d("zning", "onNext(" + bean.getSortLetters()+">>"+bean.getName() + ")");
-        }
+    public void showAppListMap(Map<String, List<AppBean>> appListMap) {
+        appAdapter.setData(appListMap);
     }
-
 }

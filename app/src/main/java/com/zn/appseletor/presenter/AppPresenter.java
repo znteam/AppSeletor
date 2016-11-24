@@ -8,6 +8,7 @@ import com.zn.appseletor.model.AppModel;
 import com.zn.appseletor.view.IAppListView;
 
 import java.util.List;
+import java.util.Map;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -27,22 +28,23 @@ public class AppPresenter {
     }
 
     public void getAppList(Context mContext) {
-        appModel.loadAppList(mContext).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<List<AppBean>>(){
+        appModel.loadAppList(mContext).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<Map<String, List<AppBean>>>() {
             @Override
             public void onCompleted() {
-                Log.i("zning", "onCompleted");
+
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.i("zning", "onError");
+
             }
 
             @Override
-            public void onNext(List<AppBean> appBean) {
-                Log.i("zning", "onNext");
-                
-                appListView.showAppList(appBean);
+            public void onNext(Map<String, List<AppBean>> appMap) {
+                if (appMap == null || appMap.isEmpty()) {
+                    return;
+                }
+                appListView.showAppListMap(appMap);
             }
         });
     }
